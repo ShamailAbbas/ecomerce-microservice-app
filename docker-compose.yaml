@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_order_app
+    ports:
+      - "5672:5672" # AMQP protocol port
+      - "15672:15672" # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+  product-service:
+    image: thallavi/product-service:latest
+    container_name: product-service
+    ports:
+      - "6000:6000"
+    environment:
+      - PRODUCT_SERVICE_MONGO_URI=your-secret-key
+    networks:
+      - microservices-network
+
+  order-service:
+    image: thallavi/order-service:latest
+    container_name: order-service
+    ports:
+      - "4000:4000"
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - ORDER_SERVICE_MONGO_URI=your-secret-key
+    networks:
+      - microservices-network
+
+  notification-service:
+    image: thallavi/notification-service:latest
+    container_name: notification-service
+    ports:
+      - "5000:5000"
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+    driver: local

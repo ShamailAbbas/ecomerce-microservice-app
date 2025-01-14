@@ -16,9 +16,7 @@ const PORT = process.env.PORT || 5000;
 // RabbitMQ connection setup
 async function connectToRabbitMQ() {
   try {
-    const connection = await amqp.connect(
-      process.env.RABBITMQ_URL || "amqp://localhost"
-    );
+    const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
     await channel.assertQueue("order-queue");
 

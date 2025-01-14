@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb://localhost:27017/productServiceDB", {
+  .connect(process.env.PRODUCT_SERVICE_MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
