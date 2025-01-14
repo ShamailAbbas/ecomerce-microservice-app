@@ -1,0 +1,9 @@
+frontend/node_modules
+frontend/.next
+frontend/package-lock.json
+backend/notification-service/node_modules
+backend/notification-service/package-lock.json
+backend/order-service/node_modules
+backend/order-service/package-lock.json
+backend/product-service/node_modules
+backend/product-service/package-lock.json

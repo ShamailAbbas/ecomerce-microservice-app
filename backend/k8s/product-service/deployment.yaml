@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: thallavi/product-service:latest
+          ports:
+            - containerPort: 6000
+          env:
+            - name: SECRET_KEY
+              value: "your-secret-key"
