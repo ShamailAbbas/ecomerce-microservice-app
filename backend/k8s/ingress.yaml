@@ -10,21 +10,21 @@ spec:
     - host: ecomerce-microservice-app.local
       http:
         paths:
-          - path: /products
+          - path: /product
             pathType: Prefix
             backend:
               service:
                 name: product-service
                 port:
                   number: 80
-          - path: /orders
+          - path: /order
             pathType: Prefix
             backend:
               service:
                 name: order-service
                 port:
                   number: 80
-          - path: /notifications
+          - path: /notification
             pathType: Prefix
             backend:
               service:
