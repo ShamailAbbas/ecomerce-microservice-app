@@ -7,7 +7,7 @@ const orders = [
     id: 1,
     product: "Laptop",
     price: 1200,
-    status: "Processing",
+    status: "Processing....",
   },
   {
     id: 2,
