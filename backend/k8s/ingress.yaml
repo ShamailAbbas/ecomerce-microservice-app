@@ -5,6 +5,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx  # Specify the IngressClass
   rules:
     - host: ecomerce-microservice-app.local
       http:
