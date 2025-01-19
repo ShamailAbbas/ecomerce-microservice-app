@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: thallavi/order-service:latest
+          image: thallavi/order-service:594f1d4
           ports:
             - containerPort: 4000
           env:
