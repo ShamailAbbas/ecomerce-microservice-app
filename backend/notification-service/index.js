@@ -41,7 +41,7 @@ app.get("/notification", async (req, res) => {
   res.send([
     {
       id: 1,
-      message: "Your order has been placed successfully.",
+      message: "Your order has been placed successfully...",
       timestamp: "2023-10-01T10:00:00Z",
     },
     {
