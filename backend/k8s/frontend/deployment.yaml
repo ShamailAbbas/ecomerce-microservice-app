@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nextjs-app
-          image: thallavi/ecomerce-microservice-app:latest # Replace with your Docker image name
+          image: thallavi/ecomerce-microservice-app:da26a6e
           ports:
             - containerPort: 3000 # Port your Next.js app runs on
           env:
