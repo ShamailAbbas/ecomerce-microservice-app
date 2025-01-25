@@ -29,5 +29,5 @@ app.use("/order", orderRoutes);
 // Start the server
 const PORT = 4000;
 app.listen(PORT, () => {
-  console.log(`Order Service running on port ${PORT}`);
+  console.log(`Order Service running on port ${PORT} ...`);
 });
