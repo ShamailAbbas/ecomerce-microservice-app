@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
 
-  // Fetch notifications from the backend
+  // Fetch notifications from the backend--
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
