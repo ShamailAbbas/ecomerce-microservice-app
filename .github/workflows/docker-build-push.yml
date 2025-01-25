@@ -31,12 +31,17 @@ jobs:
       - name: Detect changes in frontend
         id: frontend
         run: |
-          FRONTEND_CHANGED=$(git diff --name-only HEAD^ HEAD | awk -F/ '{print $2}' | grep -E '^(frontend)$' | sort | uniq)
-          echo "Changed services: $FRONTEND_CHANGED"
-          echo "FRONTEND_CHANGED=$FRONTEND_CHANGED" >> $GITHUB_ENV
+          FRONTEND_CHANGED=$(git diff --name-only HEAD~1 HEAD -- frontend)
+          if [ -n "$FRONTEND_CHANGED" ]; then
+            echo "Changes detected in frontend folder: $FRONTEND_CHANGED"
+            echo "FRONTEND_CHANGED=frontend" >> $GITHUB_ENV
+          else
+            echo "No changes detected in frontend folder"
+            echo "FRONTEND_CHANGED=" >> $GITHUB_ENV
+          fi
 
       - name: Build and push Frontend
-        if: contains(env.FRONTEND_CHANGED, 'frontend')
+        if: env.FRONTEND_CHANGED == 'frontend'
         uses: docker/build-push-action@v4
         with:
           context: ./frontend
@@ -101,7 +106,14 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add ./backend/k8s/
-          git commit -m "Update Kubernetes manifests with new image tags for commit ${{ env.COMMIT_HASH }}"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push origin main
+          git add ./backend/k8s/ ./frontend/k8s/
+      
+          # Check if there are any changes to commit
+          if git diff --quiet --cached; then
+            echo "No changes to commit."
+          else
+            echo "Changes detected. Committing and pushing..."
+            git commit -m "Update Kubernetes manifests with new image tags for commit ${{ env.COMMIT_HASH }}"
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+            git push origin main
+          fi
