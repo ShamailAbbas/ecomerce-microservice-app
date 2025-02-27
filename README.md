@@ -29,6 +29,6 @@ Used for deploying the backend services in a Kubernetes cluster.
 
 To run this project locally, you will need the `nginx` folder and the `docker-compose.yaml` file located at the root of this repository. These files are essential for setting up the local environment using Docker.
 
-However, if you are deploying the project in a Kubernetes (k8s) cluster, these files are not required. Instead, you should use the Kubernetes manifests provided in the `backend/k8s` folder for each service. To route traffic to the appropriate services within the cluster, we utilize an Nginx Ingress.
+However, if you are deploying the project in a Kubernetes (k8s) cluster, these files are not required. Instead, you should use the Kubernetes manifests provided in the `k8s` folder for each service. To route traffic to the appropriate services within the cluster, we utilize an Nginx Ingress.
 
 Please note that the frontend has not been containerized.
