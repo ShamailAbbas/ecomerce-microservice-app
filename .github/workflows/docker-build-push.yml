@@ -1,9 +1,9 @@
-name: Docker Build & Push
+name: Docker Build and Push
 
 on:
   push:
     branches:
-      - main
+      - main # Trigger workflow on push to the main branch
 
 jobs:
   build-and-push:
@@ -13,10 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-
-      - name: Ensure full git history
-        run: git fetch --unshallow
+          fetch-depth: 0 # Fetch full history to get the commit hash
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -34,11 +31,12 @@ jobs:
       - name: Detect changes in frontend
         id: frontend
         run: |
-          FRONTEND_CHANGED=$(git diff --name-only HEAD~1 HEAD -- frontend || true)
+          FRONTEND_CHANGED=$(git diff --name-only HEAD~1 HEAD -- frontend)
           if [ -n "$FRONTEND_CHANGED" ]; then
-            echo "Changes detected in frontend folder"
+            echo "Changes detected in frontend folder: $FRONTEND_CHANGED"
             echo "FRONTEND_CHANGED=frontend" >> $GITHUB_ENV
           else
+            echo "No changes detected in frontend folder"
             echo "FRONTEND_CHANGED=" >> $GITHUB_ENV
           fi
 
@@ -53,16 +51,12 @@ jobs:
       - name: Detect changes in backend services
         id: changed-services
         run: |
-          CHANGED_SERVICES=$(git diff --name-only HEAD~1 HEAD | awk -F/ '{print $2}' | grep -E '^(product-service|order-service|notification-service)$' | sort | uniq || true)
-          if [ -n "$CHANGED_SERVICES" ]; then
-            echo "Changed services: $CHANGED_SERVICES"
-            echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
-          else
-            echo "CHANGED_SERVICES=" >> $GITHUB_ENV
-          fi
+          CHANGED_SERVICES=$(git diff --name-only HEAD^ HEAD | awk -F/ '{print $2}' | grep -E '^(product-service|order-service|notification-service)$' | sort | uniq)
+          echo "Changed services: $CHANGED_SERVICES"
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Build and push Product Service
-        if: env.CHANGED_SERVICES != '' && contains(env.CHANGED_SERVICES, 'product-service')
+        if: contains(env.CHANGED_SERVICES, 'product-service')
         uses: docker/build-push-action@v4
         with:
           context: ./backend/product-service
@@ -70,7 +64,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/product-service:${{ env.COMMIT_HASH }}
 
       - name: Build and push Order Service
-        if: env.CHANGED_SERVICES != '' && contains(env.CHANGED_SERVICES, 'order-service')
+        if: contains(env.CHANGED_SERVICES, 'order-service')
         uses: docker/build-push-action@v4
         with:
           context: ./backend/order-service
@@ -78,7 +72,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/order-service:${{ env.COMMIT_HASH }}
 
       - name: Build and push Notification Service
-        if: env.CHANGED_SERVICES != '' && contains(env.CHANGED_SERVICES, 'notification-service')
+        if: contains(env.CHANGED_SERVICES, 'notification-service')
         uses: docker/build-push-action@v4
         with:
           context: ./backend/notification-service
@@ -98,7 +92,7 @@ jobs:
           done
 
       - name: Update Kubernetes manifest for frontend
-        if: env.FRONTEND_CHANGED == 'frontend'
+        if: contains(env.FRONTEND_CHANGED, 'frontend')
         run: |
           DEPLOYMENT_FILE="./k8s/frontend/deployment.yaml"
           if [ -f "$DEPLOYMENT_FILE" ]; then
@@ -114,6 +108,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add ./k8s/
 
+          # Check if there are any changes to commit
           if git diff --quiet --cached; then
             echo "No changes to commit."
           else
@@ -121,3 +116,4 @@ jobs:
             git commit -m "Update Kubernetes manifests with new image tags for commit ${{ env.COMMIT_HASH }}"
             git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
             git push origin main
+          fi
