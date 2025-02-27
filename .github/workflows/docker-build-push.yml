@@ -82,7 +82,7 @@ jobs:
       - name: Update Kubernetes manifests for backend services
         run: |
           for service in $CHANGED_SERVICES; do
-            DEPLOYMENT_FILE="./backend/k8s/$service/deployment.yaml"
+            DEPLOYMENT_FILE="./k8s/$service/deployment.yaml"
             if [ -f "$DEPLOYMENT_FILE" ]; then
               echo "Updating $DEPLOYMENT_FILE with new image tag"
               sed -i "s|image: ${{ secrets.DOCKER_HUB_USERNAME }}/$service:.*|image: ${{ secrets.DOCKER_HUB_USERNAME }}/$service:${{ env.COMMIT_HASH }}|g" "$DEPLOYMENT_FILE"
@@ -94,7 +94,7 @@ jobs:
       - name: Update Kubernetes manifest for frontend
         if: contains(env.FRONTEND_CHANGED, 'frontend')
         run: |
-          DEPLOYMENT_FILE="./backend/k8s/frontend/deployment.yaml"
+          DEPLOYMENT_FILE="./k8s/frontend/deployment.yaml"
           if [ -f "$DEPLOYMENT_FILE" ]; then
             echo "Updating $DEPLOYMENT_FILE with new image tag"
             sed -i "s|image: ${{ secrets.DOCKER_HUB_USERNAME }}/ecomerce-microservice-app:.*|image: ${{ secrets.DOCKER_HUB_USERNAME }}/ecomerce-microservice-app:${{ env.COMMIT_HASH }}|g" "$DEPLOYMENT_FILE"
@@ -106,8 +106,8 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add ./backend/k8s/
-      
+          git add ./k8s/
+
           # Check if there are any changes to commit
           if git diff --quiet --cached; then
             echo "No changes to commit."

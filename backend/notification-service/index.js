@@ -20,7 +20,7 @@ async function connectToRabbitMQ() {
     const channel = await connection.createChannel();
     await channel.assertQueue("order-queue");
 
-    console.log("Connected to RabbitMQ and waiting for messages...");
+    console.log("Connected to RabbitMQ and waiting for messages....");
 
     // Consume messages from the queue
     channel.consume("order-queue", (message) => {
