@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: thallavi/notification-service:e78501f
+          image: thallavi/notification-service:33b7acb
           ports:
             - containerPort: 5000
           env:
