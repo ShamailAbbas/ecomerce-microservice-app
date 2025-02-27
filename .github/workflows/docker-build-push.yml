@@ -51,7 +51,7 @@ jobs:
       - name: Detect changes in backend services
         id: changed-services
         run: |
-          CHANGED_SERVICES=$(git diff --name-only HEAD^ HEAD | awk -F/ '{print $2}' | grep -E '^(product-service|order-service|notification-service)$' | sort | uniq)
+          CHANGED_SERVICES=$(git diff --name-only HEAD^ HEAD | awk -F/ '{print $2}' | grep -E '^(product-service|order-service|notification-service)$' | sort | uniq | tr '\n' ' ')
           echo "Changed services: $CHANGED_SERVICES"
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
